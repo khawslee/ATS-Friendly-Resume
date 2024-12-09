@@ -33,12 +33,42 @@ if page == "Rephase to Google XYZ":
                 # Send to Google Generative AI for matching score
                 model = genai.GenerativeModel("gemini-1.5-flash")
                 response = model.generate_content(
-                    f"Rewrite these bullet point using this structure: 'Accomplished [X] as measured by [Y], by doing [Z]' format, highlighting the 'what' (X), 'how it was measured'(Y), and 'specific actions taken' (Z) to showcase the impact of your work with quantifiable data, use compelling language, without buzzwords and keep it under 200 words, give me 3 variations for each bullet point, Do not explain the 'Accomplished, measured, and by doing' phrases, the order of in sentence for the X,Y,Z can be different so that it is more engaging, measured by can be ignore if it is not applicable. Z should start with powerful action verbs, do not use first person. Just need to provide the rephase sentence. Below is my bullet point to extract relevent information:\n{bullet_point}"
+                    f"Please rephrase the following bullet point, incorporate quantifiable achievements and improvements, following the Google recruiter XYZ formula. Give each suggested bullet point response below 30 words. Ensure the bullet points optimized for ATS screening.Below is my bullet point to extract relevent information:\n{bullet_point}"
                 )
+                # response = model.generate_content(
+                #     f"Rephrase each bullet point into 3 variations using the structure: 'Accomplished [X] as measured by [Y], by doing [Z],' emphasizing the 'what' (X), 'how it was measured' (Y), and 'specific actions taken' (Z). Ensure the content is impactful, and free of buzzwords. Use compelling language, and vary the X, Y, and Z order for engagement. Exclude the 'measured by' if irrelevant. Z must begin with action verbs and need quantitative matrics, avoiding first-person language. Provide only the rephrased sentences. Below is my bullet point to extract relevent information:\n{bullet_point}"
+                # )
                 st.write("Rephrased Bullet Point:\n", response.text)
 
 if page == "Bullet Point Rephaser":
     st.title("📄 ATS Bullet Point Rephaser")
+    
+    # Job title input
+    job_title = st.text_input("Paste the job title here")
+    
+    # Job description input
+    job_description = st.text_area("Paste the job description here")
+
+    # Bullet point input
+    bullet_point = st.text_area("Paste the bullet point here")
+    
+    if st.button("Find keywords"):
+        if job_description:
+            with st.spinner("Analyzing..."):
+                # Set your Google Generative AI API key
+                genai.configure(api_key=api_key)
+                # Send to Google Generative AI for matching score
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                response = model.generate_content(
+                    f"You are a highly skilled ATS (Applicant Tracking System) scanner with expert-level knowledge of ATS standards and functionality. Your task is to extract and list only the most relevant keywords from the provided job description. Ensure that each keyword aligns precisely with the job title and its core requirements. Be concise, accurate, and provide one keyword per line without any additional explanations or irrelevant terms. Do not generate or fabricate any content beyond what is present in the job description.\n\nJob title:{job_title}\n\nJob description:{job_description}"
+                )
+                #st.write(response.text)
+                
+                response_rephase = model.generate_content(
+                    f"Please rephrase the following bullet point using the suggested keywords and incorporate quantifiable achievements and improvements, following the Google recruiter XYZ formula. Ensure the bullet points remain precise, concise, and optimized for ATS screening. Focus exclusively on bullet points without adding any new or fabricated information.\n\nBullet point:\n{bullet_point}\n\nSuggestions:\n{response.text}"
+                )
+                st.write("Keywords:\n", response.text)
+                st.write("\nRephrased Bullet Point:\n", response_rephase.text)
 
 elif page == "Resume Generator":
     st.title("📝 ATS Resume Generator")
