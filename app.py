@@ -17,7 +17,7 @@ st.set_page_config(page_title="ATS Resume Evaluation System", layout="wide")
 api_key = st.text_input("Enter your Google Generative AI API key", type="password")
 
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Rephase to Google XYZ", "Bullet Point Rephaser", "Resume Generator"])
+page = st.sidebar.radio("Go to", ["Rephase to Google XYZ", "Core competencies extractor", "Bullet Point Rephaser", "Resume Generator"])
 
 if page == "Rephase to Google XYZ":
     st.title("📄 Rephase to Google Recruiter XYZ formula")
@@ -36,6 +36,24 @@ if page == "Rephase to Google XYZ":
                     f"Please rephrase the following bullet point, incorporate quantifiable achievements and improvements, following the Google recruiter XYZ formula. Give each suggested bullet point response below 40 words. Ensure the bullet points optimized for ATS screening.Below is my bullet point to extract relevent information:\n{bullet_point}"
                 )
                 st.write("Rephrased Bullet Point:\n", response.text)
+                
+if page == "Core competencies extractor":
+    st.title("📄 Core competencies extractor")
+    
+    # Job description input
+    job_description = st.text_area("Paste the job description here")
+    
+    if st.button("Extract"):
+        if job_description:
+            with st.spinner("Analyzing..."):
+                # Set your Google Generative AI API key
+                genai.configure(api_key=api_key)
+                # Send to Google Generative AI for matching score
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                response = model.generate_content(
+                    f"please give me 6 important core competencies from Job Description:\n{job_description}\nPlease explain the core competencies. and then please provide the core competencies separate by |"
+                )
+                st.write("Core competencies:\n\n", response.text)
 
 if page == "Bullet Point Rephaser":
     st.title("📄 ATS Bullet Point Rephaser")
