@@ -16,6 +16,14 @@ st.set_page_config(page_title="ATS Resume Evaluation System", layout="wide")
 # API Key Input (Password Field)
 api_key = st.text_input("Enter your Google Generative AI API key", type="password")
 
+# Job title input
+job_title = st.text_input("Paste the job title here")
+
+# Job description input
+job_description = st.text_area("Paste the job description here")
+
+# File uploader
+uploaded_file = st.file_uploader("Upload your resume (PDF)", type="pdf")
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Rephase to Google XYZ", "Core competencies extractor", "Bullet Point Rephaser", "Resume Generator"])
 
@@ -40,9 +48,6 @@ if page == "Rephase to Google XYZ":
 if page == "Core competencies extractor":
     st.title("📄 Core competencies extractor")
     
-    # Job description input
-    job_description = st.text_area("Paste the job description here")
-    
     if st.button("Extract"):
         if job_description:
             with st.spinner("Analyzing..."):
@@ -57,12 +62,6 @@ if page == "Core competencies extractor":
 
 if page == "Bullet Point Rephaser":
     st.title("📄 ATS Bullet Point Rephaser")
-    
-    # Job title input
-    job_title = st.text_input("Paste the job title here")
-    
-    # Job description input
-    job_description = st.text_area("Paste the job description here")
 
     # Bullet point input
     bullet_point = st.text_area("Paste the bullet point here")
