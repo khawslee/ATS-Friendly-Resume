@@ -1,20 +1,42 @@
-import streamlit as st
-import PyPDF2
-import google.generativeai as genai
+import streamlit as st # Import the Streamlit library for creating web apps
+import PyPDF2 # Import the PyPDF2 library for working with PDF files
+import google.generativeai as genai # Import the Google Generative AI library
+import re # Import the regular expression library
+import time # Import the time library
 
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_file):
+    # Create a PDF reader object
     pdf_reader = PyPDF2.PdfReader(pdf_file)
+    # Initialize an empty string to store the text
     text = ""
+    # Loop through each page in the PDF
     for page in pdf_reader.pages:
+        # Extract the text from the page and append it to the text string
         text += page.extract_text()
+    # Return the extracted text
     return text
 
 # Make Streamlit page wide
 st.set_page_config(page_title="ATS Resume Evaluation System", layout="wide")
 
-# API Key Input (Password Field)
-api_key = st.text_input("Enter your Google Generative AI API key", type="password")
+# Create two columns for API key and model selection
+col1, col2 = st.columns(2)
+
+# API Key Input (Password Field) in the first column
+with col1:
+    api_key = st.text_input("Enter your Google Generative AI API key", type="password")
+
+# Model selection dropdown in the second column
+with col2:
+    if api_key:
+        genai.configure(api_key=api_key)
+        model_list = [model.name for model in genai.list_models() if 'gemini' in model.name]
+        model_name = st.selectbox("Select Gemini Model", model_list)
+    else:
+        model_name = None
+        st.warning("Please enter your API key to select a model.")
+
 
 # Job title input
 job_title = st.text_input("Paste the job title here")
@@ -35,12 +57,12 @@ if page == "Rephase to Google XYZ":
     bullet_point = st.text_area("Paste the bullet point here")
     
     if st.button("Rephase"):
-        if bullet_point:
+        if bullet_point and model_name:
             with st.spinner("Analyzing..."):
                 # Set your Google Generative AI API key
                 genai.configure(api_key=api_key)
                 # Send to Google Generative AI for matching score
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                model = genai.GenerativeModel(model_name)
                 response = model.generate_content(
                     f"Please rephrase the following bullet point, incorporate quantifiable achievements and improvements, following the Google recruiter XYZ formula. Give each suggested bullet point response below 40 words. Ensure the bullet points optimized for ATS screening.Below is my bullet point to extract relevent information:\n{bullet_point}"
                 )
@@ -50,12 +72,12 @@ if page == "Core competencies extractor":
     st.title("📄 Core competencies extractor")
     
     if st.button("Extract"):
-        if job_description:
+        if job_description and model_name:
             with st.spinner("Analyzing..."):
                 # Set your Google Generative AI API key
                 genai.configure(api_key=api_key)
                 # Send to Google Generative AI for matching score
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                model = genai.GenerativeModel(model_name)
                 response = model.generate_content(
                     f"please give me 6 important core competencies from Job Description:\n{job_description}\nPlease explain the core competencies. and then please provide the core competencies separate by |"
                 )
@@ -68,12 +90,12 @@ if page == "Bullet Point Rephaser":
     bullet_point = st.text_area("Paste the bullet point here")
     
     if st.button("Find keywords"):
-        if job_description:
+        if job_description and model_name:
             with st.spinner("Analyzing..."):
                 # Set your Google Generative AI API key
                 genai.configure(api_key=api_key)
                 # Send to Google Generative AI for matching score
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                model = genai.GenerativeModel(model_name)
                 response = model.generate_content(
                     f"You are a highly skilled ATS (Applicant Tracking System) scanner with expert-level knowledge of ATS standards and functionality. Your task is to extract and list only the most relevant keywords from the provided job description. Ensure that each keyword aligns precisely with the job title and its core requirements. Be concise, accurate, and provide the keyword per line end separate by comma without any additional explanations or irrelevant terms. Do not generate or fabricate any content beyond what is present in the job description.\n\nJob title:{job_title}\n\nJob description:{job_description}"
                 )
@@ -102,7 +124,7 @@ elif page == "ATS Friendly Resume Generator":
 
     # Process button
     if st.button("Generate Optimized Resume"):
-        if uploaded_file is not None and job_description and api_key:
+        if uploaded_file is not None and job_description and api_key and model_name:
             with st.spinner("Analyzing..."):
                 # Set your Google Generative AI API key
                 genai.configure(api_key=api_key)
@@ -118,8 +140,7 @@ elif page == "ATS Friendly Resume Generator":
                 matching_score = 0
                 
                 # Send to Google Generative AI for matching score
-                #model = genai.GenerativeModel("gemini-1.5-flash")
-                model = genai.GenerativeModel("gemini-2.0-flash-exp")
+                model = genai.GenerativeModel(model_name)
 
                 suggestions = ""
                 # Iterate until matching score reaches 85 or maximum iterations reached
@@ -176,7 +197,7 @@ elif page == "ATS Friendly Resume Generator":
                 st.write(best_resume_text)
 
         else:
-            st.warning("Please upload a resume and paste a job description and enter your API key.")
+            st.warning("Please upload a resume and paste a job description and enter your API key and select a model.")
     
 elif page == "Generate Cover Letter":
     st.title("📝 ATS Friendly Cover Letter Generator")
@@ -184,13 +205,13 @@ elif page == "Generate Cover Letter":
     prompt_option = st.selectbox("Select a prompt", ["Short", "Long"])
 
     if st.button("Generate Cover Letter"):
-        if uploaded_file:
+        if uploaded_file and model_name:
             with st.spinner("Analyzing..."):
                 # Set your Google Generative AI API key
                 genai.configure(api_key=api_key)
                 resume_text = extract_text_from_pdf(uploaded_file)
                 # Send to Google Generative AI for matching score
-                model = genai.GenerativeModel("gemini-2.0-flash-exp")
+                model = genai.GenerativeModel(model_name)
                 
                 prompt1 = """
 					You are an expert career assistant specializing in crafting compelling cover letter. Perform the following tasks step-by-step:
@@ -248,3 +269,7 @@ elif page == "Generate Cover Letter":
                     prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text)
                 )
                 st.write("Cover letter:\n", response.text)
+                
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("© 2024 khawslee. All rights reserved.")
