@@ -16,6 +16,7 @@ This application is designed to help job seekers create resumes that are optimiz
 *   **ATS Bullet Point Rephaser:** Rephrases bullet points using keywords extracted from the job description, optimized for ATS screening.
 *   **ATS Friendly Resume Generator:** Generates an optimized resume by analyzing the original resume and job description, and iteratively improving it based on a matching score.
 *   **ATS Friendly Cover Letter Generator:** Generates a cover letter tailored to the job description, using the resume as input.
+*   **Introduction Generator:** Generates a self-introduction based on the job title, job description, and resume.
 
 ## How to Use
 
@@ -38,7 +39,7 @@ This application is designed to help job seekers create resumes that are optimiz
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/your-username/ATS-Friendly-Resume.git
+    git clone https://github.com/khawslee/ATS-Friendly-Resume.git
     ```
 2.  Navigate to the project directory:
     ```bash
@@ -70,6 +71,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [issues-shield]: https://img.shields.io/github/issues/khawslee/ATS-Friendly-Resume.svg?style=for-the-badge
 [issues-url]: https://github.com/khawslee/ATS-Friendly-Resume/issues
 [license-shield]: https://img.shields.io/github/license/khawslee/ATS-Friendly-Resume.svg?style=for-the-badge
-[license-url]: https://github.com/khawslee/ATS-Friendly-Resume/blob/master/LICENSE.txt
+[license-url]: https://github.com/khawslee/ATS-Friendly-Resume/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/khawslee
