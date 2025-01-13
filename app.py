@@ -256,7 +256,7 @@ elif page == "Generate Cover Letter":
                     - Keep the tone professional and engaging, expressing enthusiasm for the role and the company.
                     - The cover letter must be concise (approximately one page) with a clear structure:
                     - Opening Paragraph: Using the hook from Step 2.
-                    - Body Paragraph(s): Showcase only relevant skills, achievements which with the company’s needs.
+                    - Body Paragraph(s): Showcase only relevant skills and achievements with matric which with the company’s needs.
                     - Closing Paragraph: Reiterate interest, express excitement to contribute, and include a call to action for the next steps.
                     - Avoid repetition and ensure every sentence adds value, demonstrating expertise in crafting impactful cover letters.
                     Generate a final output that is ATS-friendly, polished, and tailored for maximum impact.
