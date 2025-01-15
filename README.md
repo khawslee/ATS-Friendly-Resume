@@ -17,6 +17,8 @@ This application is designed to help job seekers create resumes that are optimiz
 *   **ATS Friendly Resume Generator:** Generates an optimized resume by analyzing the original resume and job description, and iteratively improving it based on a matching score.
 *   **ATS Friendly Cover Letter Generator:** Generates a cover letter tailored to the job description, using the resume as input.
 *   **Introduction Generator:** Generates a self-introduction based on the job title, job description, and resume.
+*   **Top Interview Questions:** Generates the top 5 most relevant interview questions based on the job description and resume.
+*   **Common Interview Questions:** Generates answers to common interview questions based on the job description and resume.
 
 ## How to Use
 
