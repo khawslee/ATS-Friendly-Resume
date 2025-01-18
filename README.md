@@ -11,28 +11,28 @@ This application is designed to help job seekers create resumes that are optimiz
 
 ## Features
 
-*   **Rephrase to Google Recruiter XYZ formula:** 
+*   **Rephrase to Google Recruiter XYZ formula:** \
 Rephrases bullet points to incorporate quantifiable achievements and improvements, following the Google recruiter XYZ formula.
 
-*   **Core competencies extractor:** 
+*   **Core competencies extractor:** \
 Extracts core competencies from a job description.
 
-*   **ATS Bullet Point Rephaser:** 
+*   **ATS Bullet Point Rephaser:** \
 Rephrases bullet points using keywords extracted from the job description, optimized for ATS screening.
 
-*   **ATS Friendly Resume Generator:** 
+*   **ATS Friendly Resume Generator:** \
 Generates an optimized resume by analyzing the original resume and job description, and iteratively improving it based on a matching score.
 
-*   **ATS Friendly Cover Letter Generator:** 
+*   **ATS Friendly Cover Letter Generator:** \
 Generates a cover letter tailored to the job description, using the resume as input.
 
-*   **Introduction Generator:** 
+*   **Introduction Generator:** \
 Generates a self-introduction based on the job title, job description, and resume.
 
-*   **Top Interview Questions:** 
+*   **Top Interview Questions:** \
 Generates the top 5 most relevant interview questions based on the job description and resume.
 
-*   **Common Interview Questions:** 
+*   **Common Interview Questions:** \
 Generates answers to common interview questions based on the job description and resume.
 
 ## How to Use
