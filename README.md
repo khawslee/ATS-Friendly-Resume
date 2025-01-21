@@ -50,6 +50,7 @@ Generates answers to common interview questions based on the job description and
 *   Streamlit
 *   PyPDF2
 *   google-generativeai
+*   pyttsx3
 *   An active Google Generative AI API key
 
 ## Installation
