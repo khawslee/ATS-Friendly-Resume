@@ -2,19 +2,16 @@ import streamlit as st
 import google.generativeai as genai
 from utils import extract_text_from_pdf
 
-def generate_cover_letter_page(api_key, model_name, uploaded_file, job_title, job_description):
+def generate_cover_letter_page(api_key, model_name, model_provider, uploaded_file, job_title, job_description):
     st.title("📝 ATS Friendly Cover Letter Generator")
     
     prompt_option = st.selectbox("Select a prompt", ["Short", "Long"])
+    custom_prompt = st.text_input("Enter custom prompt (optional)")
 
     if st.button("Generate Cover Letter"):
         if uploaded_file and model_name:
             with st.spinner("Analyzing..."):
-                # Set your Google Generative AI API key
-                genai.configure(api_key=api_key)
                 resume_text = extract_text_from_pdf(uploaded_file)
-                # Send to Google Generative AI for matching score
-                model = genai.GenerativeModel(model_name)
                 
                 prompt1 = """
 					You are a career coach specializing in creating concise and impactful short cover letters. Your goal is to craft a polished response that aligns with the job description and the candidate's resume, ensuring maximum relevance and engagement in a brief format. Follow these steps carefully:
@@ -111,7 +108,32 @@ def generate_cover_letter_page(api_key, model_name, uploaded_file, job_title, jo
                     """
                 
                 prompt = prompt1 if prompt_option == "Short" else prompt2
-                response = model.generate_content(
-                    prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text)
-                )
+                if custom_prompt:
+                    prompt += f"\n\nCustom Prompt: {custom_prompt}"
+                
+                if model_provider == "Gemini":
+                    # Set your Google Generative AI API key
+                    genai.configure(api_key=api_key)
+                    # Send to Google Generative AI for matching score
+                    model = genai.GenerativeModel(model_name)
+                    response = model.generate_content(
+                    prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text))
+                elif model_provider == "Groq":
+                    import requests
+                    headers = {
+                        "Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                    response = requests.post(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        headers=headers,
+                        json={
+                            "model": model_name,
+                            "messages": [{"role": "user", "content": prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text)}]
+                        }
+                    )
+                    response.raise_for_status()
+                    st.write("Cover letter:\n", response.json()["choices"][0]["message"]["content"])
+                    return
+
                 st.write("Cover letter:\n", response.text)
