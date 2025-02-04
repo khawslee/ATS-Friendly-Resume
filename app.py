@@ -1,6 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
-import requests
+from groq import Groq
 from utils import extract_text_from_pdf, generate_speech
 from rephase_to_google_xyz import rephase_to_google_xyz_page
 from core_competencies_extractor import core_competencies_extractor_page
@@ -18,15 +18,10 @@ st.set_page_config(page_title="ATS Resume Evaluation System", layout="wide")
 # Function to fetch Groq models
 def fetch_groq_models(api_key):
     try:
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
-        response = requests.get("https://api.groq.com/openai/v1/models", headers=headers)
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-        models = response.json().get("data", [])
-        return [model["id"] for model in models]
-    except requests.exceptions.RequestException as e:
+        client = Groq(api_key=api_key)
+        models = client.models.list().data
+        return [model.id for model in models]
+    except Exception as e:
         st.error(f"Error fetching Groq models: {e}")
         return []
 
@@ -49,9 +44,13 @@ with col2:
             model_name = None
             st.warning("Please enter your API key to select a model.")
     elif model_provider == "Groq":
-        if "groq_models" not in st.session_state:
-            st.session_state.groq_models = fetch_groq_models(api_key)
-        model_name = st.selectbox("Select Groq Model", st.session_state.groq_models)
+        if api_key:
+            if "groq_models" not in st.session_state:
+                st.session_state.groq_models = fetch_groq_models(api_key)
+            model_name = st.selectbox("Select Groq Model", st.session_state.groq_models)
+        else:
+            model_name = None
+            st.warning("Please enter your API key to select a model.")
     else:
         model_name = None
 
