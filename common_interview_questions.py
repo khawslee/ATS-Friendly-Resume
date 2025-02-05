@@ -1,8 +1,9 @@
 import streamlit as st
 import google.generativeai as genai
 from utils import extract_text_from_pdf
+import groq
 
-def common_interview_questions_page(api_key, model_name, job_description, uploaded_file):
+def common_interview_questions_page(api_key, model_name, model_provider, job_description, uploaded_file):
     st.title("Common Interview Questions")
     
     #List of questions
@@ -11,9 +12,66 @@ def common_interview_questions_page(api_key, model_name, job_description, upload
     if st.button("Generate Questions and Answers"):
         if job_description and model_name and api_key and uploaded_file:
             with st.spinner("Generating..."):
-                genai.configure(api_key=api_key)
-                model = genai.GenerativeModel(model_name)
                 resume_text = extract_text_from_pdf(uploaded_file)
+                if model_provider == "Gemini":
+                    genai.configure(api_key=api_key)
+                    model = genai.GenerativeModel(model_name)
+                    prompt = f"""
+                        You are an expert career assistant specializing in crafting compelling interview questions and answers.
+                        
+                        Task:
+                        - Provide a concise and professional answer for each question listed in {listofQuestion}, tailored to the job description and resume.
+                        
+                        Guidelines:
+                        - The questions should be relevant to the job description and the candidate's resume.
+                        - The answers should be concise, professional, and highlight the candidate's strengths and qualifications, utilizing CARL method Context, Action, Result, Learning.
+                        - Each answer should be no more 2 minutes.
+                        - The output should be in a clear and easy-to-read format.
+                        
+                        Inputs:
+                        Job Description: {job_description}
+                        Resume: {resume_text}
+                        
+                        Output:
+                        Provide the questions and answers in the following format:
+                        Question: [Question]
+                        Answer: [Answer]
+                        """
+                    response = model.generate_content(prompt)
+                    st.write(response.text)
+                elif model_provider == "Groq":
+                    client = groq.Groq(api_key=api_key)
+                    chat_completion = client.chat.completions.create(
+                        model=model_name,
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": f"""
+                                    You are an expert career assistant specializing in crafting compelling interview questions and answers.
+                                    
+                                    Task:
+                                    - Provide a concise and professional answer for each question listed in {listofQuestion}, tailored to the job description and resume.
+                                    
+                                    Guidelines:
+                                    - The questions should be relevant to the job description and the candidate's resume.
+                                    - The answers should be concise, professional, and highlight the candidate's strengths and qualifications, utilizing CARL method Context, Action, Result, Learning.
+                                    - Each answer should be no more 2 minutes.
+                                    - The output should be in a clear and easy-to-read format.
+                                    
+                                    Inputs:
+                                    Job Description: {job_description}
+                                    Resume: {resume_text}
+                                    
+                                    Output:
+                                    Provide the questions and answers in the following format:
+                                    Question: [Question]
+                                    Answer: [Answer]
+                                    """,
+                            }
+                        ],
+                    )
+                    st.write(chat_completion.choices[0].message.content)
+                    return
                 prompt = f"""
                     You are an expert career assistant specializing in crafting compelling interview questions and answers.
                     
