@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 from utils import extract_text_from_pdf, generate_speech
 
-def introduction_generator_page(api_key, model_name, uploaded_file, job_title, job_description):
+def introduction_generator_page(api_key, model_name, model_provider, uploaded_file, job_title, job_description):
     st.title("Introduction Generator")
     
     resume_text = extract_text_from_pdf(uploaded_file)
@@ -10,8 +10,6 @@ def introduction_generator_page(api_key, model_name, uploaded_file, job_title, j
     if st.button("Generate Introduction"):
         if job_title and job_description and resume_text and model_name and api_key:
             with st.spinner("Generating..."):
-                genai.configure(api_key=api_key)
-                model = genai.GenerativeModel(model_name)
                 
                 prompt = """
 					You are an expert career assistant specializing in crafting compelling introductions about yourself. Perform the following tasks step-by-step:
@@ -41,13 +39,30 @@ def introduction_generator_page(api_key, model_name, uploaded_file, job_title, j
 					Only the introduction in plain text format in paragraphs, do not provide breakdown
                     """
                     
-                response = model.generate_content(
-                    prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text)
-                )
-                # f"Please generate a self-introduction and experience summary not more than 2 minutes for a recruiter based on the following job title, job description, and resume. Start by thanking for the intervie opportunity, then introduce yourself, after that craft an attention grabbing hook based on the summarized challenges, then continue with the present and tell why you are well qualified for the position, matching your qualifications to what the recruiter is looking for. Keep it short, simple, and in the end include a call to action for the next steps. Provide the output as plain text with easy to read format, and the introduction should be like in a interview. \n\nJob Title: {job_title}\nJob Description: {job_description}\nResume: {resume_text}"
-                introduction_text = response.text
-                st.write(introduction_text)
-
+                if model_provider == "Gemini":
+                    genai.configure(api_key=api_key)
+                    model = genai.GenerativeModel(model_name)
+                
+                    response = model.generate_content(
+                        prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text)
+                    )
+                    # f"Please generate a self-introduction and experience summary not more than 2 minutes for a recruiter based on the following job title, job description, and resume. Start by thanking for the intervie opportunity, then introduce yourself, after that craft an attention grabbing hook based on the summarized challenges, then continue with the present and tell why you are well qualified for the position, matching your qualifications to what the recruiter is looking for. Keep it short, simple, and in the end include a call to action for the next steps. Provide the output as plain text with easy to read format, and the introduction should be like in a interview. \n\nJob Title: {job_title}\nJob Description: {job_description}\nResume: {resume_text}"
+                    introduction_text = response.text
+                    st.write(introduction_text)
+                elif model_provider == "Groq":
+                    from groq import Groq
+                    client = Groq(api_key=api_key)
+                    chat_completion = client.chat.completions.create(
+                        model=model_name,
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text),
+                            }
+                        ],
+                    )
+                    introduction_text = chat_completion.choices[0].message.content
+                    st.write(introduction_text)
                 # Generate speech
                 audio_file = generate_speech(introduction_text, "introduction.wav")
                 if audio_file:

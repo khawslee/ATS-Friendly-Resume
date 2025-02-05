@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 from utils import extract_text_from_pdf, generate_speech
 
-def tell_me_about_yourself_page(api_key, model_name, uploaded_file, job_title, job_description):
+def tell_me_about_yourself_page(api_key, model_name, model_provider, uploaded_file, job_title, job_description):
     st.title("Tell me about yourself")
     
     resume_text = extract_text_from_pdf(uploaded_file)
@@ -10,9 +10,6 @@ def tell_me_about_yourself_page(api_key, model_name, uploaded_file, job_title, j
     if st.button("Generate"):
         if job_title and job_description and resume_text and model_name and api_key:
             with st.spinner("Generating..."):
-                genai.configure(api_key=api_key)
-                model = genai.GenerativeModel(model_name)
-                
                 prompt = """
 					You are a career coach with expertise in crafting impactful "Tell me about yourself" introductions for job interviews. Your goal is to create a polished and tailored response that aligns with the job description and the candidate's resume, ensuring maximum engagement and relevance. Follow these steps carefully:
 
@@ -41,13 +38,30 @@ def tell_me_about_yourself_page(api_key, model_name, uploaded_file, job_title, j
                     Write the introduction as a short, engaging, and conversational response in plain text format, ensuring each sentence demonstrates value and relevance to the role.
                     """
                     
-                response = model.generate_content(
-                    prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text)
-                )
+                if model_provider == "Gemini":
+                    genai.configure(api_key=api_key)
+                    model = genai.GenerativeModel(model_name)
+                
+                    response = model.generate_content(
+                        prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text)
+                    )
 
-                introduction_text = response.text
-                st.write(introduction_text)
-
+                    introduction_text = response.text
+                    st.write(introduction_text)
+                elif model_provider == "Groq":
+                    from groq import Groq
+                    client = Groq(api_key=api_key)
+                    chat_completion = client.chat.completions.create(
+                        model=model_name,
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text),
+                            }
+                        ],
+                    )
+                    introduction_text = chat_completion.choices[0].message.content
+                    st.write(introduction_text)
                 # Generate speech
                 audio_file = generate_speech(introduction_text, "tellmeaboutyourself.wav")
                 if audio_file:
