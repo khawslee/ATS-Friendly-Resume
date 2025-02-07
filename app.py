@@ -11,6 +11,7 @@ from introduction_generator import introduction_generator_page
 from tell_me_about_yourself import tell_me_about_yourself_page
 from top_interview_questions import top_interview_questions_page
 from common_interview_questions import common_interview_questions_page
+from skill_training_generator import skill_training_generator_page
 
 # Make Streamlit page wide
 st.set_page_config(page_title="ATS Resume Evaluation System", layout="wide")
@@ -65,9 +66,11 @@ job_description = st.text_area("Paste the job description here")
 uploaded_file = st.file_uploader("Upload your resume (PDF)", type="pdf")
 
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Rephase to Google XYZ", "Core competencies extractor", "Bullet Point Rephaser", "ATS Friendly Resume Generator", "Generate Cover Letter", "Introduction Generator", "Tell me about yourself", "Top Interview Questions", "Common Interview Questions"])
+page = st.sidebar.radio("Go to", ["Rephrase to Google XYZ", "Core competencies extractor", "Bullet Point Rephaser", "ATS Friendly Resume Generator", "Generate Cover Letter", "Introduction Generator", "Tell me about yourself", "Top Interview Questions", "Common Interview Questions", "Skill Training Generator"])
 
-if page == "Rephase to Google XYZ":
+if page == "Skill Training Generator":
+    skill_training_generator_page(api_key, model_name, model_provider, job_title, job_description)
+elif page == "Rephrase to Google XYZ":
     rephase_to_google_xyz_page(api_key, model_name, model_provider)
 elif page == "Core competencies extractor":
     core_competencies_extractor_page(api_key, model_name, model_provider, job_description)
