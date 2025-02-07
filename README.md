@@ -41,6 +41,9 @@ Leverages Groq for faster and more efficient processing.
 *   **Deepseek R1 support:**
 Leverages Deepseek R1 for enhanced resume analysis and generation.
 
+*   **Skill Training Generator:**
+Generates personalized skill training recommendations based on job descriptions and resume gaps.
+
 ## How to Use
 
 1.  **API Key:** Enter your Google Generative AI API key.
