@@ -119,21 +119,18 @@ def generate_cover_letter_page(api_key, model_name, model_provider, uploaded_fil
                     response = model.generate_content(
                     prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text))
                 elif model_provider == "Groq":
-                    import requests
-                    headers = {
-                        "Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json"
-                    }
-                    response = requests.post(
-                        "https://api.groq.com/openai/v1/chat/completions",
-                        headers=headers,
-                        json={
-                            "model": model_name,
-                            "messages": [{"role": "user", "content": prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text)}]
-                        }
+                    from groq import Groq
+                    client = Groq(api_key=api_key)
+                    chat_completion = client.chat.completions.create(
+                        model=model_name,
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": prompt.format(job_title=job_title, job_description=job_description, resume_text=resume_text),
+                            }
+                        ],
                     )
-                    response.raise_for_status()
-                    st.write("Cover letter:\n", response.json()["choices"][0]["message"]["content"])
+                    st.write("Cover letter:\n", chat_completion.choices[0].message.content)
                     return
 
                 st.write("Cover letter:\n", response.text)

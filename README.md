@@ -7,7 +7,7 @@
 
 # ATS-Friendly-Resume
 
-This application is designed to help job seekers create resumes that are optimized for Applicant Tracking Systems (ATS). It leverages Google's Generative AI to provide several tools for improving your resume and cover letter.
+This application is designed to help job seekers create resumes that are optimized for Applicant Tracking Systems (ATS). It allows users to select from a list of generative AI models, including Google's Generative AI and Deepseek R1, to provide several tools for improving your resume and cover letter.
 
 ## Features
 
@@ -35,6 +35,12 @@ Generates the top 5 most relevant interview questions based on the job descripti
 *   **Common Interview Questions:** \
 Generates answers to common interview questions based on the job description and resume.
 
+*   **Groq support:**
+Leverages Groq for faster and more efficient processing.
+
+*   **Deepseek R1 support:**
+Leverages Deepseek R1 for enhanced resume analysis and generation.
+
 ## How to Use
 
 1.  **API Key:** Enter your Google Generative AI API key.
@@ -52,6 +58,7 @@ Generates answers to common interview questions based on the job description and
 *   google-generativeai
 *   pyttsx3
 *   An active Google Generative AI API key
+*   Groq
 
 ## Installation
 
